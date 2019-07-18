@@ -35,9 +35,10 @@ DECLARE
 BEGIN
 	v_marcar_procesado = 'si';
   	v_nombre_funcion = 'informix.f_modificar_datos_web_emi_manual';
+
    DROP FOREIGN TABLE IF EXISTS informix.boletos_modificacion;
    DROP FOREIGN TABLE IF EXISTS informix.boletos_fpago_modificacion;
-
+	select informix.f_user_mapping() into v_resp;
     execute ('CREATE FOREIGN TABLE informix.boletos_modificacion (
       pais varchar(3),
 	estacion varchar(3),
@@ -212,6 +213,7 @@ BEGIN
 EXCEPTION
 
     WHEN others THEN BEGIN
+
     	v_error = SQLERRM;
         if (v_error not like 'CONTROLADO%') then
         	v_id_alarma = (select param.f_inserta_alarma_dblink (1,'Error al procesar modificaciones de venta web',v_error,'jaime.rivera@boa.bo,aldo.zeballos@boa.bo,dcamacho@boa.bo'));
@@ -223,4 +225,8 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
+PARALLEL UNSAFE
 COST 100;
+
+ALTER FUNCTION informix.f_modificar_datos_web_emi_manual (p_billete varchar, p_banco varchar)
+  OWNER TO postgres;
