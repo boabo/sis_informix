@@ -2,8 +2,8 @@ CREATE OR REPLACE FUNCTION informix.f_migra_boleto_retweb (
   p_id_usuario integer,
   p_fecha date
 )
-  RETURNS varchar AS
-  $body$
+RETURNS varchar AS
+$body$
 DECLARE
   v_consulta    		varchar;
 	v_registros  		record;
@@ -24,6 +24,8 @@ DECLARE
     v_fecha_vuelo		date;
     v_id_boleto_conjuncion	integer;
     v_hora_vuelo		time;
+    v_cantidad_boletos	integer;
+    v_id_alarma			integer;
 BEGIN
   	v_nombre_funcion = 'informix.f_migra_boleto_retweb';
 
@@ -31,7 +33,7 @@ BEGIN
         v_consulta = '''select b.billete,b.pasajero,b.importe,b.moneda,b.fecha,fp.tarjeta,fp.numero,b.estado
                         from boletos b
                         inner join fpago fp on fp.billete = b.billete
-                        where b.fecha = ''''' || v_fecha_texto || '''''  and fp.tarjeta = ''''VI'''' and fp.numero like ''''%000000005555''''
+                        where b.fecha = ''''' || v_fecha_texto || '''''  and fp.tarjeta = ''''VI'''' and (fp.numero like ''''%000000005555'''' or fp.numero like ''''%000000006666'''')
 
                         ''';
 
@@ -56,7 +58,7 @@ BEGIN
       client_locale ''en_US.utf8'',
       informixserver ''sai1'');');
 
-
+	v_cantidad_boletos = 0;
     for v_registros in (select b.*
     					from informix.boletos b
                           ) loop
@@ -86,11 +88,15 @@ BEGIN
                  trim (both ' ' from v_registros.numero_tarjeta),
                  v_registros.estado
               );
+              v_cantidad_boletos = v_cantidad_boletos + 1;
     end loop;
 
-
-
     DROP FOREIGN TABLE informix.boletos;
+
+    if (v_cantidad_boletos = 0) then
+    	v_id_alarma = (select param.f_inserta_alarma_dblink (1,'No se encontro ningun boleto en la RET','No se encontro ningun boleto al migrar informacion de la RET. Revisar Archivos FTP','jaime.rivera@boa.bo'));
+    	raise exception 'No se encontro ningun boleto en la RET';
+    end if;
 
     return 'exito';
 
@@ -107,3 +113,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION informix.f_migra_boleto_retweb (p_id_usuario integer, p_fecha date)
+  OWNER TO postgres;

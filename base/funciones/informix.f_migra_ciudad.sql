@@ -66,7 +66,7 @@ BEGIN
             else*/
             --update al pais en pxp
                 UPDATE
-                    param.tlugar
+                    param.tlugar l
                 SET
                   id_usuario_mod = p_id_usuario,
                   fecha_mod = now(),
@@ -141,7 +141,6 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
-PARALLEL UNSAFE
 COST 100;
 
 ALTER FUNCTION informix.f_migra_ciudad (p_id_usuario integer)
