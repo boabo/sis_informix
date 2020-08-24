@@ -88,7 +88,7 @@ BEGIN
                                                       id_usuario_reg
                                                       )
                                                       values
-                                                     (v_texto,
+                                                     (v_mensaje_correo,
                                                      NULL,
                                                      now()::date,
                                                      null,
