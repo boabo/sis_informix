@@ -17,7 +17,7 @@ BEGIN
 
     v_consulta = '''select a.agt, a.nomagt,a.boaagt,a.iata,a.ctoato, a.estacion,n.agtnoiata,n.nomagt,n.idcorni
                     from agencias a
-                    left join agtnoiata n on n.agt = a.agt ''';
+                    left join agtnoiata n on n.agt = a.agt''';
 
 	select informix.f_user_mapping() into v_resp;
 
@@ -32,7 +32,6 @@ BEGIN
       nombre_noiata varchar(255),
       idcorni varchar(2)
       ) SERVER sai1
-
     OPTIONS ( query ' || v_consulta || ',
     database ''ingresos'',
       informixdir ''/opt/informix'',
@@ -52,7 +51,6 @@ BEGIN
                     where codigo = v_registros.agt::integer::varchar and (codigo_noiata is null or codigo_noiata = TRIM(both ' ' from v_registros.codigo_noiata) or codigo_int = TRIM(both ' ' from v_registros.codigo_noiata))))then
 
             --update a la agencia iata
-
             UPDATE
   				obingresos.tagencia
             SET
@@ -176,9 +174,7 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
-PARALLEL UNSAFE
 COST 100;
 
 ALTER FUNCTION informix.f_migra_agencia (p_id_usuario integer)
   OWNER TO postgres;
- 
