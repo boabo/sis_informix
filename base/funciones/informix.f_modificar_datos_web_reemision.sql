@@ -83,7 +83,6 @@ BEGIN
 	nomarch varchar(30),
 	formap_mediopago varchar(15)
       ) SERVER sai1
-
     OPTIONS ( table ''boletos'',
     database ''ingresos'',
       informixdir ''/opt/informix'',
@@ -124,7 +123,6 @@ BEGIN
       idcenproc varchar(6),
       nomarch varchar(30)
       ) SERVER sai1
-
     OPTIONS ( table ''fpago'',
     database ''ingresos'',
       informixdir ''/opt/informix'',
@@ -234,7 +232,6 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
-PARALLEL UNSAFE
 COST 100;
 
 ALTER FUNCTION informix.f_modificar_datos_web_reemision (p_billete varchar, p_billete_original varchar)
